@@ -11,13 +11,6 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                script {
-                    // Install Docker (this may vary depending on your Jenkins node setup)
-                    sh '''
-                    apt-get update
-                    apt-get install -y docker.io
-                    '''
-                }
                 // ECR login
                 sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${docker_repo_uri}"
             }
