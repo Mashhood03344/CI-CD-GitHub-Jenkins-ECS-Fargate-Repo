@@ -8,15 +8,12 @@ pipeline {
      environment {
         region = "us-east-1"
         docker_repo_uri = "905418229977.dkr.ecr.us-east-1.amazonaws.com/sample-app"
-        task_def_arn = "arn:aws:ecs:us-east-1:905418229977:task-definition/first-run-task-definition"
         cluster = "default"
         exec_role_arn = "arn:aws:iam::905418229977:role/ecsTaskExecutionRole"
+        service_name = "sample-app-service"
     }
-    
-    // Here you can define one or more stages for your pipeline.
-    // Each stage can execute one or more steps.
+
     stages {
-        // This is a stage.
         stage('Build') {
             steps {
                 // Get SHA1 of current commit
@@ -25,25 +22,31 @@ pipeline {
                 }
                 // Build the Docker image
                 sh "docker build -t ${docker_repo_uri}:${commit_id} ."
-                // Get Docker login credentials for ECR
-                sh "aws ecr get-login --no-include-email --region ${region} | sh"
+                
+                // Get Docker login credentials for ECR and log in
+                sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${docker_repo_uri}"
+                
                 // Push Docker image
                 sh "docker push ${docker_repo_uri}:${commit_id}"
-                // Clean up
+                
+                // Clean up the local Docker image
                 sh "docker rmi -f ${docker_repo_uri}:${commit_id}"
             }
         }
 
         stage('Deploy') {
             steps {
-                // Override image field in taskdef file
+                // Override image field in taskdef.json
                 sh "sed -i 's|{{image}}|${docker_repo_uri}:${commit_id}|' taskdef.json"
-                // Create a new task definition revision
-                sh "aws ecs register-task-definition --execution-role-arn ${exec_role_arn} --cli-input-json file://taskdef.json --region ${region}"
-                // Update service on Fargate
-                sh "aws ecs update-service --cluster ${cluster} --service sample-app-service --task-definition ${task_def_arn} --region ${region}"
+                
+                // Register a new task definition revision
+                script {
+                    task_def_arn = sh(script: "aws ecs register-task-definition --execution-role-arn ${exec_role_arn} --cli-input-json file://taskdef.json --region ${region} --query 'taskDefinition.taskDefinitionArn' --output text", returnStdout: true).trim()
+                }
+                
+                // Update the ECS service with the new task definition revision
+                sh "aws ecs update-service --cluster ${cluster} --service ${service_name} --task-definition ${task_def_arn} --region ${region}"
             }
         }
-
     }
 }
