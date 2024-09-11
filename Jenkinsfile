@@ -4,8 +4,8 @@ pipeline {
     environment {
         region = "us-east-1"
         docker_repo_uri = "905418229977.dkr.ecr.us-east-1.amazonaws.com/simple-html-app"
-        cluster = "DevCluster"
-        ecs_service_name = "ECS-Service"
+        cluster = "simple-html-cluster"
+        ecs_service_name = "simple-html-service"
     }
 
     stages {
