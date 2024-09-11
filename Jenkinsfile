@@ -28,12 +28,11 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    // Get the current Git commit ID
-                    commit_id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    // Tag the Docker image with 'latest'
+                    sh "docker tag sample-app:latest ${docker_repo_uri}:latest"
                     
-                    // Tag and push the Docker image
-                    sh "docker tag sample-app:latest ${docker_repo_uri}:${commit_id}"
-                    sh "docker push ${docker_repo_uri}:${commit_id}"
+                    // Push the Docker image with the 'latest' tag
+                    sh "docker push ${docker_repo_uri}:latest"
                 }
             }
         }
@@ -54,4 +53,3 @@ pipeline {
         }
     }
 }
-
