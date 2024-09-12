@@ -53,7 +53,7 @@ pipeline {
                         body: "The build is ready for approval. Details:\n\n" +
                               "Build URL: ${env.BUILD_URL}\n" +
                               "Please approve or reject the build.",
-                        to: "${recipient}"
+                        to: "${recipient}",
                         debug: true
                     )
 
