@@ -54,6 +54,7 @@ pipeline {
                               "Build URL: ${env.BUILD_URL}\n" +
                               "Please approve or reject the build.",
                         to: "${recipient}"
+                        debug: true
                     )
 
                     // Wait for manual approval
