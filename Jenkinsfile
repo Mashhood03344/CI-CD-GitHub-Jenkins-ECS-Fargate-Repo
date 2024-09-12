@@ -46,7 +46,7 @@ pipeline {
                     )
 
                     // Wait for manual approval
-                    input message: "Approve deployment to ECS?", submitter: 'admin'
+                    input message: "Approve deployment to ECS?", submitter: 'Zia'
                 }
             }
         }
