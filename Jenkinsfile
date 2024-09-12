@@ -36,26 +36,17 @@ pipeline {
         stage('Approval') {
             steps {
                 script {
-                    // Fetch Git commit hash
-                    def commitHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-
-                    // Send an email notification with additional build details
+                    // Send an email notification
                     emailext(
-                        subject: "Approval Needed for Jenkins Build #${env.BUILD_NUMBER}",
-                        body: """The build is ready for approval.
-                        \nBuild Details:
-                        \nBuild Number: ${env.BUILD_NUMBER}
-                        \nBuild URL: ${env.BUILD_URL}
-                        \nCommit Hash: ${commitHash}
-                        \nBranch: ${env.GIT_BRANCH}
-                        \nDuration: ${currentBuild.durationString}
-                        \nConsole Output: ${env.BUILD_URL}console
-                        \nPlease approve or reject the build.""",
+                        subject: "Approval Needed for Jenkins Build",
+                        body: "The build is ready for approval. Details:\n\n" +
+                              "Build URL: ${env.BUILD_URL}\n" +
+                              "Please approve or reject the build.",
                         to: "${recipient}"
                     )
 
                     // Wait for manual approval
-                    input message: "Approve deployment to ECS?", submitter: 'Zia'
+                    input message: "Approve deployment to ECS?", submitter: 'admin'
                 }
             }
         }
@@ -75,27 +66,15 @@ pipeline {
         }
         success {
             emailext(
-                subject: "Build Success #${env.BUILD_NUMBER}",
-                body: """The build was successful.
-                \nBuild Details:
-                \nBuild Number: ${env.BUILD_NUMBER}
-                \nBuild URL: ${env.BUILD_URL}
-                \nDuration: ${currentBuild.durationString}
-                \nCommit Hash: ${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}
-                \nConsole Output: ${env.BUILD_URL}console""",
+                subject: "Build Success",
+                body: "The build was successful.\n\nBuild URL: ${env.BUILD_URL}",
                 to: "${recipient}"
             )
         }
         failure {
             emailext(
-                subject: "Build Failed #${env.BUILD_NUMBER}",
-                body: """The build failed.
-                \nBuild Details:
-                \nBuild Number: ${env.BUILD_NUMBER}
-                \nBuild URL: ${env.BUILD_URL}
-                \nDuration: ${currentBuild.durationString}
-                \nCommit Hash: ${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}
-                \nConsole Output: ${env.BUILD_URL}console""",
+                subject: "Build Failed",
+                body: "The build failed.\n\nBuild URL: ${env.BUILD_URL}",
                 to: "${recipient}"
             )
         }
