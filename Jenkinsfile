@@ -6,7 +6,7 @@ pipeline {
         docker_repo_uri = "905418229977.dkr.ecr.us-east-1.amazonaws.com/simple-html-app"
         cluster = "simple-html-cluster"
         ecs_service_name = "simple-html-service"
-        recipient = "mashhoodhamid786@gmail.com"
+        recipient = "mashhoodhamid@Cloudelligent.com"
     }
 
     stages {
@@ -80,8 +80,8 @@ pipeline {
         }
         failure {
             emailext(
-                subject: "Build Failed",
-                body: "The build failed.\n\nBuild URL: ${env.BUILD_URL}",
+                subject: "Build Rejected",
+                body: "The build Rejected.\n\nBuild URL: ${env.BUILD_URL}",
                 to: "${recipient}"
             )
         }
