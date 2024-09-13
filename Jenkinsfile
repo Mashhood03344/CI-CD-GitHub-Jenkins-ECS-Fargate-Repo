@@ -6,7 +6,7 @@ pipeline {
         docker_repo_uri = "905418229977.dkr.ecr.us-east-1.amazonaws.com/simple-html-app"
         cluster = "simple-html-cluster"
         ecs_service_name = "simple-html-service"
-        recipient = "mashhoodhamid786@gmail.com"  // Replace with the real admin email
+        recipient = "mashhoodhamid786@gmail.com"
     }
 
     stages {
@@ -32,32 +32,27 @@ pipeline {
                 }
             }
         }
-        
-        
+
         stage('Send Test Email') {
-	    steps {
-		emailext(
-		    subject: "Test Email",
-		    body: "This is a test email from Jenkins.",
-		    to: "${recipient}"
-		)
-	    }
-	}
+            steps {
+                emailext(
+                    subject: "Test Email",
+                    body: "This is a test email from Jenkins.",
+                    to: "${recipient}"
+                )
+            }
+        }
 
         stage('Approval') {
             steps {
                 script {
-                    // Send an email notification
                     emailext(
                         subject: "Approval Needed for Jenkins Build",
                         body: "The build is ready for approval. Details:\n\n" +
                               "Build URL: ${env.BUILD_URL}\n" +
                               "Please approve or reject the build.",
-                        to: "${recipient}",
-                        debug: true
+                        to: "${recipient}"
                     )
-
-                    // Wait for manual approval
                     input message: "Approve deployment to ECS?", submitter: 'Zia'
                 }
             }
