@@ -6,7 +6,7 @@ pipeline {
         docker_repo_uri = "905418229977.dkr.ecr.us-east-1.amazonaws.com/simple-html-app"
         cluster = "simple-html-cluster"
         ecs_service_name = "simple-html-service"
-        recipient = "mashhoodhamid@Cloudelligent.com"
+        recipient = "mashhoodhamid786@gmail.com"
     }
 
     stages {
