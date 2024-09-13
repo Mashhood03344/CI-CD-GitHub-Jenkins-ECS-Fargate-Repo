@@ -33,16 +33,6 @@ pipeline {
             }
         }
 
-        stage('Send Test Email') {
-            steps {
-                emailext(
-                    subject: "Test Email",
-                    body: "This is a test email from Jenkins.",
-                    to: "${recipient}"
-                )
-            }
-        }
-
         stage('Approval') {
             steps {
                 script {
